@@ -15,7 +15,7 @@ Case::Case() {
 
 Case::Case(point pos, CaseAttribut::CaseType type, bool needToBeOpen) {
 	Case::type = type;
-	Case::state = CaseAttribut::closed();
+	Case::state = CaseAttribut::closed;
 	Case::pos = pos;
 	Case::needToBeOpen = needToBeOpen;
 	Case::nbBombeAround = 0;

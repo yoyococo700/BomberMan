@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <vector>
 #include "point.hpp"
+#include "Case.hpp"
 
 #define N 5
 namespace CaseAttribut {

@@ -1,10 +1,13 @@
 #include "Case.hpp"
+#include <iostream>
+#include <cstdlib>
+#include <vector>
 
 #ifdef SFML
 #include <SFML/Graphics.hpp>
 #endif
 
-int main() {
+int main(void) {
 	std::cout << "Debut du programme\n";
 	srand((unsigned)time(0));
 	Tableau newtab(80);
