@@ -69,5 +69,6 @@ private:
 
 	void nbBombeAroundCase(point pos);
 	void openNeedToBeOpenCase();
+	bool isCaseIsABoundary(point pos);
 
 };

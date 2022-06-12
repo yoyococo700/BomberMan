@@ -6,9 +6,6 @@ CaseAttribut::CaseType TypeRandom(float proba) {
 	return CaseAttribut::CaseType(rand() % 100 > proba);
 }
 
-
-
-
 Case::Case() {
 
 }
@@ -268,6 +265,9 @@ void Tableau::openNeedToBeOpenCase()
 	
 }
 
+bool Tableau::isCaseIsABoundary(point pos){
+	return tab[i][j].
+}
 
 
 Tableau::Tableau() {
