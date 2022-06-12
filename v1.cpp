@@ -1,20 +1,19 @@
 #include "Case.hpp"
-#include <iostream>
-#include <cstdlib>
-#include <vector>
 
 #ifdef SFML
 #include <SFML/Graphics.hpp>
 #endif
 
-int main(void) {
+int main() {
 	std::cout << "Debut du programme\n";
 	srand((unsigned)time(0));
-	Tableau newtab(80);
+	Tableau newtab(90);
 	newtab.debugBombeTab();
     newtab.debugNbBombeAround();
     newtab.drawTab();
     
+    newtab.updateTab();
+    newtab.debugOpener();
     
 #ifdef SFML
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");

@@ -6,15 +6,18 @@ CaseAttribut::CaseType TypeRandom(float proba) {
 	return CaseAttribut::CaseType(rand() % 100 > proba);
 }
 
+
+
+
 Case::Case() {
 
 }
 
-Case::Case(point pos, CaseAttribut::CaseType type, bool needToBeOpen) {
+Case::Case(point pos, CaseAttribut::CaseType type) {
 	Case::type = type;
-	Case::state = CaseAttribut::closed;
+	Case::state = CaseAttribut::closed();
 	Case::pos = pos;
-	Case::needToBeOpen = needToBeOpen;
+	Case::needToBeOpen = false;
 	Case::nbBombeAround = 0;
 }
 
@@ -30,6 +33,11 @@ void Case::setCaseState(CaseAttribut::CaseState state)
 void Case::setCasePos(point pos)
 {
 	Case::pos = pos;
+}
+
+void Case::setCaseNeedToBeOpen(bool condition)
+{
+	Case::needToBeOpen = condition;
 }
 
 void Case::flagLogic()
@@ -54,12 +62,17 @@ void Case::openCase()
 
 bool Case::isNeedToBeOpen()
 {
-	return Case::needToBeOpen;
+	return needToBeOpen;
 }
 
 bool Case::isCaseABomb()
 {
     return (Case::getType()==CaseAttribut::bombe);
+}
+
+bool Case::isCaseABordure()
+{
+	return (pos.x==0 || pos.x==N-1 || pos.y == 0 || pos.y == N - 1 );
 }
 
 void Case::setNbBombeAround(int nb)
@@ -83,15 +96,35 @@ CaseAttribut::CaseState Case::getCaseState()
 
 void Tableau::updateTab()
 {
-	if (change) {
-		change = false;
-		for (int i = 0; i < N; i++)
+	boundary.clear();
+	int i=N/2+3;
+	int j = N / 2 + 3;
+	boundary.push_back(point(i, j));
+	for (int m = 0; m<boundary.size();m++)
+	{	
+		std::vector<point>::iterator pos = std::next(boundary.begin(), m);
+		for (int k = pos->x - 1; k <= pos->x + 1; k++)
 		{
-			for (int j = 0; j < N; j++) {
-				
+			for (int l = pos->y - 1; l <= pos->y + 1; l++) {
+				if (!tab[k][l].isCaseABomb() && !tab[k][l].isNeedToBeOpen() && !tab[k][l].isCaseABordure()) {
+					tab[k][l].setCaseNeedToBeOpen(true);
+					if (!isCaseIsABoundary(point(k, l))) {
+						boundary.push_back(point(k, l));
+						pos = std::next(boundary.begin(), 0);
+					}
+				}
+				//debugOpener();
+				//debugBoundary();
 			}
 		}
 	}
+		
+	
+    
+	
+			
+		
+	
 
 }
 
@@ -142,6 +175,38 @@ void Tableau::debugNbBombeAround()
 		std::cout << "\n";
 	}
 	std::cout << "--------------------------------------\n";
+}
+
+void Tableau::debugOpener()
+{
+	std::cout << "--------------------------------------\n";
+	std::cout << "Debug de l'ouverture des case\n";
+	std::cout << "--------------------------------------\n";
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++) {
+			
+			if (tab[i][j].isNeedToBeOpen()==true) {
+				std::cout << tab[i][j].getNbBombeAround();
+			}
+			else if (tab[i][j].isCaseABomb()) {
+				std::cout << "B";
+			}
+			else
+			{
+				std::cout << " ";
+			}
+			
+		}
+		std::cout << "\n";
+	}
+	std::cout << "--------------------------------------\n";
+}
+
+void Tableau::debugBoundary() {
+	for (point pos : boundary) {
+		pos.printPoint();
+	}
 }
 
 int Tableau::nbBombe()
@@ -265,9 +330,11 @@ void Tableau::openNeedToBeOpenCase()
 	
 }
 
-bool Tableau::isCaseIsABoundary(point pos){
-	return tab[i][j].
+bool Tableau::isCaseIsABoundary(point pos)
+{
+	return (tab[pos.x][pos.y].getNbBombeAround() != 0);
 }
+
 
 
 Tableau::Tableau() {
@@ -297,8 +364,43 @@ Tableau::Tableau(int proba) {
 	{
 		for (int j = 0; j < N; j++) {
 			nbBombeAroundCase(point(i, j));
+			
 		}
 	}
+	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
 
 }
 
+Tableau::Tableau(int proba,int cas) {
+	CaseAttribut::CaseType type;
+	point posVec;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++) {
+			posVec.x = i;
+			posVec.y = j;
+			tab[i][j].setCaseType(CaseAttribut::vide);
+			tab[i][j].setCaseState(CaseAttribut::closed);
+			tab[i][j].setCasePos(posVec);
+		}
+	}
+	int k = N/2;
+	int l = N/2+1;
+	int m = 6;
+	for (int i = 0; i <=m ; i++)
+	{
+		tab[k][l + i].setCaseType(CaseAttribut::bombe);
+		tab[k+i][l].setCaseType(CaseAttribut::bombe);
+		tab[k+i][l + m].setCaseType(CaseAttribut::bombe);
+		tab[k + m][l+i].setCaseType(CaseAttribut::bombe);
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++) {
+			nbBombeAroundCase(point(i, j));
+		}
+	}
+	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
+
+}
