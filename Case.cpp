@@ -102,7 +102,7 @@ void Tableau::updateTab()
 	boundary.push_back(point(i, j));
 	for (int m = 0; m<boundary.size();m++)
 	{	
-		std::vector<point>::iterator pos = std::next(boundary.begin(), m);
+		std::vector<point>::iterator pos = std::next(boundary.begin(), boundary.size()-m-1);
 		for (int k = pos->x - 1; k <= pos->x + 1; k++)
 		{
 			for (int l = pos->y - 1; l <= pos->y + 1; l++) {
@@ -110,22 +110,20 @@ void Tableau::updateTab()
 					tab[k][l].setCaseNeedToBeOpen(true);
 					if (!isCaseIsABoundary(point(k, l))) {
 						boundary.push_back(point(k, l));
-						pos = std::next(boundary.begin(), 0);
+						pos = std::next(boundary.begin(), m=0);
 					}
 				}
 				//debugOpener();
+				//clearScreen();
 				//debugBoundary();
 			}
 		}
 	}
-		
 	
-    
-	
-			
-		
-	
+}
 
+void Tableau::clearScreen() {
+	system("cls");
 }
 
 void Tableau::drawTab()
@@ -187,10 +185,11 @@ void Tableau::debugOpener()
 		for (int j = 0; j < N; j++) {
 			
 			if (tab[i][j].isNeedToBeOpen()==true) {
-				std::cout << tab[i][j].getNbBombeAround();
+				
+				std::cout << int(tab[i][j].getNbBombeAround()>0);
 			}
 			else if (tab[i][j].isCaseABomb()) {
-				std::cout << "B";
+				std::cout << " ";
 			}
 			else
 			{
@@ -371,36 +370,74 @@ Tableau::Tableau(int proba) {
 
 }
 
-Tableau::Tableau(int proba,int cas) {
+
+Tableau::Tableau(int nbBombe,int cas) {
 	CaseAttribut::CaseType type;
 	point posVec;
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++) {
-			posVec.x = i;
-			posVec.y = j;
-			tab[i][j].setCaseType(CaseAttribut::vide);
-			tab[i][j].setCaseState(CaseAttribut::closed);
-			tab[i][j].setCasePos(posVec);
-		}
-	}
-	int k = N/2;
-	int l = N/2+1;
-	int m = 6;
-	for (int i = 0; i <=m ; i++)
-	{
-		tab[k][l + i].setCaseType(CaseAttribut::bombe);
-		tab[k+i][l].setCaseType(CaseAttribut::bombe);
-		tab[k+i][l + m].setCaseType(CaseAttribut::bombe);
-		tab[k + m][l+i].setCaseType(CaseAttribut::bombe);
-	}
+	int i, j;
 
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = 0; j < N; j++) {
-			nbBombeAroundCase(point(i, j));
+			tab[i][j].setCaseState(CaseAttribut::closed);
+			tab[i][j].setCaseType(CaseAttribut::vide);
+			tab[i][j].setCasePos(point(i,j));
 		}
 	}
+
+	for (int ib = 0; ib < nbBombe; ib++)
+	{
+		i = rand() % N;
+		j = rand() % N;
+		if (!tab[i][j].isCaseABomb())
+		{
+			tab[i][j].setCaseType(CaseAttribut::bombe);
+			for (int k = i-1; k <= i+1; k++)
+			{
+				for (int l = j - 1; l <= j + 1; l++) {
+					if (k>=0 && k<N && l>=0 && l<N && !tab[k][l].isCaseABomb())
+					{
+						tab[k][l].setNbBombeAround(tab[k][l].getNbBombeAround() + 1);
+					}
+				}
+			}
+		}
+	}
+	
 	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
 
 }
+
+//Tableau::Tableau(int proba,int cas) {
+//	CaseAttribut::CaseType type;
+//	point posVec;
+//	for (int i = 0; i < N; i++)
+//	{
+//		for (int j = 0; j < N; j++) {
+//			posVec.x = i;
+//			posVec.y = j;
+//			tab[i][j].setCaseType(CaseAttribut::vide);
+//			tab[i][j].setCaseState(CaseAttribut::closed);
+//			tab[i][j].setCasePos(posVec);
+//		}
+//	}
+//	int k = N/2;
+//	int l = N/2+1;
+//	int m = 6;
+//	for (int i = 0; i <=m ; i++)
+//	{
+//		tab[k][l + i].setCaseType(CaseAttribut::bombe);
+//		tab[k+i][l].setCaseType(CaseAttribut::bombe);
+//		tab[k+i][l + m].setCaseType(CaseAttribut::bombe);
+//		tab[k + m][l+i].setCaseType(CaseAttribut::bombe);
+//	}
+//
+//	for (int i = 0; i < N; i++)
+//	{
+//		for (int j = 0; j < N; j++) {
+//			nbBombeAroundCase(point(i, j));
+//		}
+//	}
+//	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
+//
+//}

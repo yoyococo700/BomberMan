@@ -55,6 +55,8 @@ public:
 
 	void updateTab();
 
+	void clearScreen();
+
 	void drawTab();
 	void debugBombeTab();
 	void debugNbBombeAround();
