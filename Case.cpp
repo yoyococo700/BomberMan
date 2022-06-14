@@ -16,7 +16,7 @@ Case::Case() {
 
 Case::Case(point pos, CaseAttribut::CaseType type) {
 	Case::type = type;
-	Case::state = CaseAttribut::closed();
+	Case::state = CaseAttribut::closed;
 	Case::pos = pos;
 	Case::needToBeOpen = false;
 	Case::nbBombeAround = 0;
@@ -149,8 +149,8 @@ void Tableau::reveal(point pos) {
 				for (int j = -1; j <= 1; j++) {
 					if (i!=0 || j!=0)
 					{
-						debugOpener();
-						clearScreen();
+						/*debugOpener();
+						clearScreen();*/
 						Tableau::reveal(point(a + i, b + j));
 						
 					}
@@ -495,7 +495,8 @@ bool Tableau::isCaseIsABoundary(point pos)
 Tableau::Tableau() {
 	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < SIZE_TAB; j++) {
+		for (int j = 0; j < SIZE_TAB
+			; j++) {
 			tab[i][j].setCaseState(CaseAttribut::closed);	
 		}
 	}
@@ -541,6 +542,7 @@ Tableau::Tableau(int nbBombe) {
 			tab[i][j].setCaseState(CaseAttribut::closed);
 			tab[i][j].setCaseType(CaseAttribut::vide);
 			tab[i][j].setCasePos(point(i,j));
+			tab[i][j].setNbBombeAround(0);
 		}
 	}
 

@@ -5,6 +5,7 @@
 #include "point.hpp"
 
 #define SIZE_TAB 20
+
 namespace CaseAttribut {
 	enum CaseType { bombe = 1, vide = 0 };
 	enum CaseState { open = 1, closed = 0, flag = 2 };

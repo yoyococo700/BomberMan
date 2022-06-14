@@ -16,7 +16,7 @@ int main() {
     newtab.debugOpener();
     
 #ifdef SFML
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(1000, 900), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
