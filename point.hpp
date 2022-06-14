@@ -7,5 +7,9 @@ public:
 	int y;
 
 	void printPoint();
+
+	bool inTab(int );
+
+	bool operator==(const point& point2);
 };
 

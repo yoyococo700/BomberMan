@@ -1,5 +1,5 @@
 #include "Case.hpp"
-
+#define SFML
 #ifdef SFML
 #include <SFML/Graphics.hpp>
 #endif
@@ -7,9 +7,8 @@
 int main() {
 	std::cout << "Debut du programme\n";
 	srand((unsigned)time(0));
-	Tableau newtab(5,1);
+	Tableau newtab(30);
 	newtab.debugBombeTab();
-    std::cout << newtab.nbBombe() << "\n";
     newtab.debugNbBombeAround();
     newtab.drawTab();
     

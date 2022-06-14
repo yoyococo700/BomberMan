@@ -15,3 +15,13 @@ void point::printPoint() {
 	std::cout << y;
 	std::cout << "\n";
 }
+
+bool point::inTab(int M) {
+	return (x >= 0 && x < M && y >= 0 && y < M);
+
+}
+
+bool point::operator==(const point& point2)
+{
+	return (x==point2.x && y==point2.y);
+}

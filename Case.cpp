@@ -1,6 +1,7 @@
 
 #include "Case.hpp"
 #include "point.hpp"
+#include <algorithm>
 
 CaseAttribut::CaseType TypeRandom(float proba) {	
 	return CaseAttribut::CaseType(rand() % 100 > proba);
@@ -72,7 +73,7 @@ bool Case::isCaseABomb()
 
 bool Case::isCaseABordure()
 {
-	return (pos.x==0 || pos.x==N-1 || pos.y == 0 || pos.y == N - 1 );
+	return (pos.x==0 || pos.x==SIZE_TAB-1 || pos.y == 0 || pos.y == SIZE_TAB - 1 );
 }
 
 void Case::setNbBombeAround(int nb)
@@ -97,30 +98,71 @@ CaseAttribut::CaseState Case::getCaseState()
 void Tableau::updateTab()
 {
 	boundary.clear();
-	int i=N/2+3;
-	int j = N / 2 + 3;
-	boundary.push_back(point(i, j));
-	for (int m = 0; m<boundary.size();m++)
-	{	
-		std::vector<point>::iterator pos = std::next(boundary.begin(), boundary.size()-m-1);
-		for (int k = pos->x - 1; k <= pos->x + 1; k++)
-		{
-			for (int l = pos->y - 1; l <= pos->y + 1; l++) {
-				if (!tab[k][l].isCaseABomb() && !tab[k][l].isNeedToBeOpen() && !tab[k][l].isCaseABordure()) {
-					tab[k][l].setCaseNeedToBeOpen(true);
-					if (!isCaseIsABoundary(point(k, l))) {
-						boundary.push_back(point(k, l));
-						pos = std::next(boundary.begin(), m=0);
-					}
-				}
-				//debugOpener();
-				//clearScreen();
-				//debugBoundary();
-			}
-		}
-	}
+	int i=SIZE_TAB/2+3;
+	int j = SIZE_TAB / 2 + 3;
+	Tableau::reveal(point(i, j));
+	//boundary.push_back(point(i, j));
+	//for (int m = 0; m<boundary.size();m++)
+	//{	
+	//	std::vector<point>::iterator pos = std::next(boundary.begin(), boundary.size()-m-1);
+	//	for (int k = pos->x - 1; k <= pos->x + 1; k++)
+	//	{
+	//		for (int l = pos->y - 1; l <= pos->y + 1; l++) {
+	//			if (!tab[k][l].isCaseABomb() && !tab[k][l].isNeedToBeOpen() && !tab[k][l].isCaseABordure()) {
+	//				tab[k][l].setCaseNeedToBeOpen(true);
+	//				if (!isCaseIsABoundary(point(k, l))) {
+	//					boundary.push_back(point(k, l));
+	//					pos = std::next(boundary.begin(), m=0);
+	//				}
+	//			}
+	//			/*if (nbNeedToBeOpenCaseAround(point(k,l))==9)
+	//			{
+	//				boundary.erase(pos);
+	//			}*/
+	//			
+	//			//debugOpener();
+	//			//clearScreen();
+	//			//debugBoundary();
+	//		}
+	//	}
+	//}
 	
 }
+
+void Tableau::reveal(point pos) {
+	
+	int a = pos.x;
+	int b = pos.y;
+	if (pos.inTab(SIZE_TAB))
+	{
+		if (tab[a][b].isNeedToBeOpen())
+			return;
+		if (!tab[a][b].isNeedToBeOpen() && !tab[a][b].isCaseABomb())
+		{	
+			tab[a][b].setCaseNeedToBeOpen(true);
+			if (isCaseIsABoundary(pos))
+			{
+				return;
+			}
+			for (int i = -1; i <=1; i++)
+			{
+				for (int j = -1; j <= 1; j++) {
+					if (i!=0 || j!=0)
+					{
+						debugOpener();
+						clearScreen();
+						Tableau::reveal(point(a + i, b + j));
+						
+					}
+				}
+			}
+			
+		}
+	}
+}
+
+
+
 
 void Tableau::clearScreen() {
 	system("cls");
@@ -128,9 +170,9 @@ void Tableau::clearScreen() {
 
 void Tableau::drawTab()
 {
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			if (tab[i][j].getType() == CaseAttribut::flag)
 				std::cout << "F";
 			else
@@ -144,9 +186,9 @@ void Tableau::debugBombeTab() {
 	std::cout << "--------------------------------------\n";
 	std::cout << "Debug des des bombes sur les pos\n";
 	std::cout << "--------------------------------------\n";
-	for (int i = 0; i <N; i++)
+	for (int i = 0; i <SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			if (tab[i][j].getType() == CaseAttribut::CaseType::bombe)
 				std::cout << "B";
 			else
@@ -162,9 +204,9 @@ void Tableau::debugNbBombeAround()
 	std::cout << "--------------------------------------\n";
 	std::cout << "Debug du compte des bombes sur les pos\n";
 	std::cout << "--------------------------------------\n";
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			if (tab[i][j].getType() == CaseAttribut::CaseType::bombe)
 				std::cout << "B";
 			else
@@ -180,9 +222,9 @@ void Tableau::debugOpener()
 	std::cout << "--------------------------------------\n";
 	std::cout << "Debug de l'ouverture des case\n";
 	std::cout << "--------------------------------------\n";
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			
 			if (tab[i][j].isNeedToBeOpen()==true) {
 				
@@ -203,17 +245,33 @@ void Tableau::debugOpener()
 }
 
 void Tableau::debugBoundary() {
-	for (point pos : boundary) {
-		pos.printPoint();
+
+	for (int i = 0; i < SIZE_TAB; i++)
+	{
+		for (int j = 0; j < SIZE_TAB; j++) {
+			std::vector<point>::iterator it = std::find(boundary.begin(), boundary.end(), point(i, j));
+			if ( it != boundary.end() ) {
+
+				std::cout << "1";
+			}
+			
+			else
+			{
+				std::cout << " ";
+			}
+		}
+		std::cout << "\n";
 	}
+	std::cout << boundary.size();
+	std::cout << "\n";
 }
 
 int Tableau::nbBombe()
 {	
 	int somme = 0;
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			if (tab[i][j].getType() == CaseAttribut::bombe)
 				somme++;
 		}
@@ -235,14 +293,14 @@ void Tableau::nbBombeAroundCase(point pos)
             return ;
         }
         //Cas en bas a gauche
-        else if (pos.y == N - 1)
+        else if (pos.y == SIZE_TAB - 1)
         {
             somme = tab[pos.x + 1][pos.y].isCaseABomb() + tab[pos.x + 1][pos.y - 1].isCaseABomb() + tab[pos.x][pos.y - 1].isCaseABomb();
             tab[pos.x][pos.y].setNbBombeAround(somme);
             return;
         }
     }
-    else if (pos.x == N - 1)
+    else if (pos.x == SIZE_TAB - 1)
     {
         if (pos.y == 0)
         {
@@ -251,7 +309,7 @@ void Tableau::nbBombeAroundCase(point pos)
             return;
         }
         //Cas en bas a droite
-        else if (pos.y == N - 1) {
+        else if (pos.y == SIZE_TAB - 1) {
             somme = tab[pos.x - 1][pos.y].isCaseABomb() + tab[pos.x - 1][pos.y - 1].isCaseABomb() + tab[pos.x][pos.y - 1].isCaseABomb();
             tab[pos.x][pos.y].setNbBombeAround(somme);
             return;
@@ -268,7 +326,7 @@ void Tableau::nbBombeAroundCase(point pos)
         return;
     }
     //Cas a droite generale
-    else if (pos.x == N - 1) {
+    else if (pos.x == SIZE_TAB - 1) {
         for (int i = pos.x - 1; i <= pos.x; i++) {
             for (int j = pos.y - 1; j <= pos.y + 1; j++) {
                 somme += tab[i][j].isCaseABomb();
@@ -293,7 +351,7 @@ void Tableau::nbBombeAroundCase(point pos)
         return;
     }
     //Cas en bas
-    else if (pos.y == N - 1)
+    else if (pos.y == SIZE_TAB - 1)
     {
         for (int i = pos.x - 1; i <= pos.x + 1; i++)
         {
@@ -319,15 +377,113 @@ void Tableau::nbBombeAroundCase(point pos)
 
 void Tableau::openNeedToBeOpenCase()
 {	
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			if (tab[i][j].isNeedToBeOpen())
 				tab[i][j].openCase();
 		}
 	}
 	
 }
+
+int Tableau::nbNeedToBeOpenCaseAround(point pos)
+{
+	int somme = 0;
+	//Cas des bords
+	if (pos.x == 0)
+	{
+		//Cas en haut a gauche
+		if (pos.y == 0)
+		{
+			somme = tab[pos.x][pos.y + 1].isNeedToBeOpen() + tab[pos.x + 1][pos.y + 1].isNeedToBeOpen() + tab[pos.x + 1][pos.y].isNeedToBeOpen();
+			
+			return somme;
+		}
+		//Cas en bas a gauche
+		else if (pos.y == SIZE_TAB - 1)
+		{
+			somme = tab[pos.x + 1][pos.y].isNeedToBeOpen() + tab[pos.x + 1][pos.y - 1].isNeedToBeOpen() + tab[pos.x][pos.y - 1].isNeedToBeOpen();
+			
+			return somme;
+		}
+	}
+	else if (pos.x == SIZE_TAB - 1)
+	{
+		if (pos.y == 0)
+		{
+			somme = tab[pos.x][pos.y + 1].isNeedToBeOpen() + tab[pos.x - 1][pos.y + 1].isNeedToBeOpen() + tab[pos.x - 1][pos.y].isNeedToBeOpen();
+			tab[pos.x][pos.y].setNbBombeAround(somme);
+			return somme;
+		}
+		//Cas en bas a droite
+		else if (pos.y == SIZE_TAB - 1) {
+			somme = tab[pos.x - 1][pos.y].isNeedToBeOpen() + tab[pos.x - 1][pos.y - 1].isNeedToBeOpen() + tab[pos.x][pos.y - 1].isNeedToBeOpen();
+			
+			return somme;
+		}
+	}
+	//Cas a gauche generale
+	if (pos.x == 0) {
+		for (int i = pos.x; i <= pos.x + 1; i++) {
+			for (int j = pos.y - 1; j <= pos.y + 1; j++) {
+				somme += tab[i][j].isNeedToBeOpen();
+			}
+		}
+		
+		return somme;
+	}
+	//Cas a droite generale
+	else if (pos.x == SIZE_TAB - 1) {
+		for (int i = pos.x - 1; i <= pos.x; i++) {
+			for (int j = pos.y - 1; j <= pos.y + 1; j++) {
+				somme += tab[i][j].isNeedToBeOpen();
+			}
+		}
+
+
+		
+		return somme;
+	}
+	//Cas en haut
+	else if (pos.y == 0)
+	{
+		for (int i = pos.x - 1; i <= pos.x + 1; i++)
+		{
+			for (int j = pos.y; j <= pos.y + 1; j++)
+			{
+				somme += tab[i][j].isNeedToBeOpen();
+			}
+		}
+		
+		return somme;
+	}
+	//Cas en bas
+	else if (pos.y == SIZE_TAB - 1)
+	{
+		for (int i = pos.x - 1; i <= pos.x + 1; i++)
+		{
+			for (int j = pos.y - 1; j <= pos.y; j++)
+			{
+				somme += tab[i][j].isNeedToBeOpen();
+			}
+		}
+		
+		return somme;
+	}
+
+
+	//cas general
+	for (int i = pos.x - 1; i <= pos.x + 1; i++) {
+		for (int j = pos.y - 1; j <= pos.y + 1; j++) {
+			somme += tab[i][j].isNeedToBeOpen();
+		}
+	}
+	
+	return somme;
+}
+
+
 
 bool Tableau::isCaseIsABoundary(point pos)
 {
@@ -337,48 +493,51 @@ bool Tableau::isCaseIsABoundary(point pos)
 
 
 Tableau::Tableau() {
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			tab[i][j].setCaseState(CaseAttribut::closed);	
 		}
 	}
 
 }
 
-Tableau::Tableau(int proba) {
-	CaseAttribut::CaseType type;
-	point posVec;
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++) {
-			posVec.x=i;
-			posVec.y=j;
-			tab[i][j].setCaseType(TypeRandom(proba));
-			tab[i][j].setCaseState(CaseAttribut::closed);
-			tab[i][j].setCasePos(posVec);
-		}
-	}
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++) {
-			nbBombeAroundCase(point(i, j));
-			
-		}
-	}
-	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
+//Tableau::Tableau(int proba) {
+//	CaseAttribut::CaseType type;
+//	point posVec;
+//	for (int i = 0; i < SIZE_TAB; i++)
+//	{
+//		for (int j = 0; j < SIZE_TAB; j++) {
+//			posVec.x=i;
+//			posVec.y=j;
+//			tab[i][j].setCaseType(TypeRandom(proba));
+//			tab[i][j].setCaseState(CaseAttribut::closed);
+//			tab[i][j].setCasePos(posVec);
+//		}
+//	}
+//	for (int i = 0; i < SIZE_TAB; i++)
+//	{
+//		for (int j = 0; j < SIZE_TAB; j++) {
+//			nbBombeAroundCase(point(i, j));
+//			
+//		}
+//	}
+//	tab[SIZE_TAB / 2][SIZE_TAB / 2 + 1].setCaseNeedToBeOpen(true);
+//
+//}
 
-}
 
-
-Tableau::Tableau(int nbBombe,int cas) {
+Tableau::Tableau(int nbBombe) {
 	CaseAttribut::CaseType type;
 	point posVec;
 	int i, j;
+	Tableau::change = false;
+	Tableau::proba = 0;
 
-	for (int i = 0; i < N; i++)
+
+	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < N; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			tab[i][j].setCaseState(CaseAttribut::closed);
 			tab[i][j].setCaseType(CaseAttribut::vide);
 			tab[i][j].setCasePos(point(i,j));
@@ -387,15 +546,15 @@ Tableau::Tableau(int nbBombe,int cas) {
 
 	for (int ib = 0; ib < nbBombe; ib++)
 	{
-		i = rand() % N;
-		j = rand() % N;
-		if (!tab[i][j].isCaseABomb())
+		i = rand() % SIZE_TAB;
+		j = rand() % SIZE_TAB;
+		if (!tab[i][j].isNeedToBeOpen())
 		{
 			tab[i][j].setCaseType(CaseAttribut::bombe);
 			for (int k = i-1; k <= i+1; k++)
 			{
 				for (int l = j - 1; l <= j + 1; l++) {
-					if (k>=0 && k<N && l>=0 && l<N && !tab[k][l].isCaseABomb())
+					if (k>=0 && k<SIZE_TAB && l>=0 && l<SIZE_TAB && !tab[k][l].isNeedToBeOpen())
 					{
 						tab[k][l].setNbBombeAround(tab[k][l].getNbBombeAround() + 1);
 					}
@@ -404,16 +563,16 @@ Tableau::Tableau(int nbBombe,int cas) {
 		}
 	}
 	
-	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
+	tab[SIZE_TAB / 2][SIZE_TAB / 2 + 1].setCaseNeedToBeOpen(true);
 
 }
 
 //Tableau::Tableau(int proba,int cas) {
 //	CaseAttribut::CaseType type;
 //	point posVec;
-//	for (int i = 0; i < N; i++)
+//	for (int i = 0; i < SIZE_TAB; i++)
 //	{
-//		for (int j = 0; j < N; j++) {
+//		for (int j = 0; j < SIZE_TAB; j++) {
 //			posVec.x = i;
 //			posVec.y = j;
 //			tab[i][j].setCaseType(CaseAttribut::vide);
@@ -421,8 +580,8 @@ Tableau::Tableau(int nbBombe,int cas) {
 //			tab[i][j].setCasePos(posVec);
 //		}
 //	}
-//	int k = N/2;
-//	int l = N/2+1;
+//	int k = SIZE_TAB/2;
+//	int l = SIZE_TAB/2+1;
 //	int m = 6;
 //	for (int i = 0; i <=m ; i++)
 //	{
@@ -432,12 +591,12 @@ Tableau::Tableau(int nbBombe,int cas) {
 //		tab[k + m][l+i].setCaseType(CaseAttribut::bombe);
 //	}
 //
-//	for (int i = 0; i < N; i++)
+//	for (int i = 0; i < SIZE_TAB; i++)
 //	{
-//		for (int j = 0; j < N; j++) {
+//		for (int j = 0; j < SIZE_TAB; j++) {
 //			nbBombeAroundCase(point(i, j));
 //		}
 //	}
-//	tab[N / 2][N / 2 + 1].setCaseNeedToBeOpen(true);
+//	tab[SIZE_TAB / 2][SIZE_TAB / 2 + 1].setCaseNeedToBeOpen(true);
 //
 //}

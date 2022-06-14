@@ -4,7 +4,7 @@
 #include <vector>
 #include "point.hpp"
 
-#define N 15
+#define SIZE_TAB 20
 namespace CaseAttribut {
 	enum CaseType { bombe = 1, vide = 0 };
 	enum CaseState { open = 1, closed = 0, flag = 2 };
@@ -41,17 +41,17 @@ private:
 	int nbBombeAround;
 	bool needToBeOpen;
 	
-
-	
 };
 
 class Tableau {
 
 public:
 	Tableau();
-	Tableau(int proba);
-	Tableau(int proba, int cas);
+	Tableau(int nbBombes);
+	//Tableau(int proba, int cas);
 	//~Tableau();
+
+	void reveal(point pos);
 
 	void updateTab();
 
@@ -69,7 +69,7 @@ public:
 private:
 
 
-	Case tab[N][N];
+	Case tab[SIZE_TAB][SIZE_TAB];
 	float proba;
 	bool change;
 
@@ -77,6 +77,8 @@ private:
 
 	void nbBombeAroundCase(point pos);
 	void openNeedToBeOpenCase();
+
+	int nbNeedToBeOpenCaseAround(point pos);
 	bool isCaseIsABoundary(point pos);
 
 };
