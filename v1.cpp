@@ -1,4 +1,6 @@
 #include "Case.hpp"
+#include "Shapes/TableauGraphic.cpp"
+
 #define SFML
 #ifdef SFML
 #include <SFML/Graphics.hpp>
@@ -7,7 +9,7 @@
 int main() {
 	std::cout << "Debut du programme\n";
 	srand((unsigned)time(0));
-	Tableau newtab(30);
+	Tableau newtab(5);
 	newtab.debugBombeTab();
     newtab.debugNbBombeAround();
     newtab.drawTab();
@@ -15,10 +17,15 @@ int main() {
     newtab.updateTab();
     newtab.debugOpener();
     
+    
+
+    TableauShape tab(800,sf::Vector2f(50,15));
+    tab.updateWithBackEnd(&newtab);
+
+
 #ifdef SFML
-    sf::RenderWindow window(sf::VideoMode(1000, 900), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode(1000, 900), "BomberMan!");
+   
 
     while (window.isOpen())
     {
@@ -28,9 +35,9 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
+        
         window.clear();
-        window.draw(shape);
+        window.draw(tab);
         window.display();
     }
 #endif // SFML

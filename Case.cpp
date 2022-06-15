@@ -101,31 +101,9 @@ void Tableau::updateTab()
 	int i=SIZE_TAB/2+3;
 	int j = SIZE_TAB / 2 + 3;
 	Tableau::reveal(point(i, j));
-	//boundary.push_back(point(i, j));
-	//for (int m = 0; m<boundary.size();m++)
-	//{	
-	//	std::vector<point>::iterator pos = std::next(boundary.begin(), boundary.size()-m-1);
-	//	for (int k = pos->x - 1; k <= pos->x + 1; k++)
-	//	{
-	//		for (int l = pos->y - 1; l <= pos->y + 1; l++) {
-	//			if (!tab[k][l].isCaseABomb() && !tab[k][l].isNeedToBeOpen() && !tab[k][l].isCaseABordure()) {
-	//				tab[k][l].setCaseNeedToBeOpen(true);
-	//				if (!isCaseIsABoundary(point(k, l))) {
-	//					boundary.push_back(point(k, l));
-	//					pos = std::next(boundary.begin(), m=0);
-	//				}
-	//			}
-	//			/*if (nbNeedToBeOpenCaseAround(point(k,l))==9)
-	//			{
-	//				boundary.erase(pos);
-	//			}*/
-	//			
-	//			//debugOpener();
-	//			//clearScreen();
-	//			//debugBoundary();
-	//		}
-	//	}
-	//}
+
+	Tableau::openNeedToBeOpenCase();
+	
 	
 }
 
@@ -141,7 +119,8 @@ void Tableau::reveal(point pos) {
 		{	
 			tab[a][b].setCaseNeedToBeOpen(true);
 			if (isCaseIsABoundary(pos))
-			{
+			{	
+				
 				return;
 			}
 			for (int i = -1; i <=1; i++)
@@ -238,6 +217,30 @@ void Tableau::debugOpener()
 				std::cout << " ";
 			}
 			
+		}
+		std::cout << "\n";
+	}
+	std::cout << "--------------------------------------\n";
+}
+
+
+
+CaseAttribut::CaseState Tableau::getTabCaseState(point pos) {
+
+	return tab[pos.x][pos.y].getCaseState();
+}
+
+void Tableau::debugCaseStateTab()
+{
+	std::cout << "--------------------------------------\n";
+	std::cout << "Debug de l'ouverture des case\n";
+	std::cout << "--------------------------------------\n";
+	for (int i = 0; i < SIZE_TAB; i++)
+	{
+		for (int j = 0; j < SIZE_TAB; j++) {
+
+			std::cout << Tableau::getTabCaseState(point(i,j));
+			std::cout << tab[i][j].getCaseState();
 		}
 		std::cout << "\n";
 	}
@@ -495,8 +498,7 @@ bool Tableau::isCaseIsABoundary(point pos)
 Tableau::Tableau() {
 	for (int i = 0; i < SIZE_TAB; i++)
 	{
-		for (int j = 0; j < SIZE_TAB
-			; j++) {
+		for (int j = 0; j < SIZE_TAB; j++) {
 			tab[i][j].setCaseState(CaseAttribut::closed);	
 		}
 	}
@@ -568,6 +570,8 @@ Tableau::Tableau(int nbBombe) {
 	tab[SIZE_TAB / 2][SIZE_TAB / 2 + 1].setCaseNeedToBeOpen(true);
 
 }
+
+
 
 //Tableau::Tableau(int proba,int cas) {
 //	CaseAttribut::CaseType type;

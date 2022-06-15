@@ -35,6 +35,9 @@ public:
 	void setNbBombeAround(int nb);
 	int getNbBombeAround();
 
+
+	
+
 private:
 	point pos;
 	CaseAttribut::CaseState state;
@@ -63,8 +66,10 @@ public:
 	void debugNbBombeAround();
 	void debugOpener();
 	void debugBoundary();
+	void debugCaseStateTab();
 	int nbBombe();
 
+	CaseAttribut::CaseState getTabCaseState(point pos);
 	
 
 private:
